@@ -81,6 +81,13 @@ export default class EmbeddingStorageService {
     EmbeddingStorageService._emitterDidChange.fire()
   }
 
+  public deleteMultiple(embeddingIds: string[]) {
+  embeddingIds.forEach((id) => {
+    this._delete(id)
+  })
+  EmbeddingStorageService._emitterDidChange.fire()
+}
+
   private _delete(embeddingId: string) {
     try {
       const key = `${VSCODE_OPENAI_EMBEDDING.STORAGE_V2_ID}-${embeddingId}`
