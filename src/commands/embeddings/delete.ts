@@ -7,16 +7,20 @@ export default class RefreshCommand implements Command {
   public readonly id = '_vscode-openai.embeddings.delete.resource'
   public constructor(private _instance: EmbeddingTreeDataProvider) {}
 
-  public async execute(node: EmbeddingTreeItem) {
+  public async execute(nodes: EmbeddingTreeItem[]) {
+    if (!nodes || nodes.length === 0) return
+
+    const message = nodes.length === 1 
+      ? 'Are you sure you want to delete this embedding?' 
+      : `Are you sure you want to delete these ${nodes.length} embeddings?`
+
     window
-      .showInformationMessage(
-        'Are you sure you want to delete this embedding?',
-        'Yes',
-        'No'
-      )
+      .showInformationMessage(message, 'Yes', 'No')
       .then((answer) => {
         if (answer === 'Yes') {
-          EmbeddingStorageService.instance.delete(node.embeddingId)
+          nodes.forEach(node => {
+            EmbeddingStorageService.instance.delete(node.embeddingId)
+          })
           this._instance.refresh()
         }
       })
